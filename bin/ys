@@ -1,13 +1,21 @@
 #!/usr/bin/python2.7
 
 from bs4 import BeautifulSoup
-import urllib2
 from prettytable import PrettyTable
 import sys
 import os
-from urlparse import urlparse
-import requests
-import urllib
+if sys.version_info[0] > 2:
+    from urllib.parse import quote as urllib_quote
+    from urllib.request import Request as urllib_request
+    from urllib.request import urlopen as urllib_urlopen
+
+else:
+    import urllib2
+    from urllib2 import quote as urllib_quote
+    from urllib2 import Request as urllib_request
+    from urllib2 import urlopen as urllib_urlopen
+
+
 
 class color:
    PURPLE = '\033[95m'
@@ -29,25 +37,30 @@ def get_input():
         movie_name = ' '.join(query[0:])
         return movie_name
     except Exception as e:
-        print e
+        print (e)
         exit()
     return query
 
 
 def display(x):
     query = x.lower()
-    quoted_query = urllib2.quote(query)
+    quoted_query = urllib_quote(query)
 
     url = "https://www.youtube.com/results?search_query=" + quoted_query
+    print(url)
+    print("**************************")
 
     # add header
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
 
-    request = urllib2.Request(url, headers=headers)
-    data_file = urllib2.urlopen(request)
+    request = urllib_request(url, headers=headers)
+    data_file = urllib_urlopen(request)
     data_html = data_file.read()
     data_file.close()
+
+    # print(data_html)
+    # print("--------------------------------------")
 
     soup = BeautifulSoup(data_html, 'html.parser')
 
@@ -55,6 +68,8 @@ def display(x):
     ref = []
 
     for h3 in soup.find_all("h3", attrs={"class":"yt-lockup-title"}):
+        print(h3)
+        print("-------------------")
         title.append(h3.find('a').contents[0])
         ref.append(h3.find('a')['href'])
 
@@ -66,9 +81,9 @@ def display(x):
         t.add_row([i+1, title[i]])
 
     if len(title) != 0:
-        print color.BOLD + color.CYAN + "\nResults : " + color.END
+        print(color.BOLD + color.CYAN + "\nResults : " + color.END)
 
-        print t
+        print(t)
 
         choice = raw_input(color.CYAN + color.BOLD + "\nEnter your choice (numerical) : " + color.END)
 
@@ -79,11 +94,11 @@ def display(x):
             os.system("vlc " + video_url)
 
         else:
-            print "Invalid entry."
+            print("Invalid entry.")
             quit()
 
     else:
-        print color.BOLD + color.CYAN + "Sorry, no results found." + color.END
+        print(color.BOLD + color.CYAN + "Sorry, no results found." + color.END)
         quit()
 
 
