@@ -52,7 +52,9 @@ def display(x):
     title = []
     ref = []
 
-    for h3 in soup.find_all("h3", attrs={"class":"yt-lockup-title"}):
+    for h3 in soup.find_all("div", attrs={"class":"ytd-search"}):
+        print(h3)
+        print("111111111111111111111111111111111111")
         title.append(h3.find('a').contents[0])
         ref.append(h3.find('a')['href'])
 

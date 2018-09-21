@@ -47,6 +47,7 @@ def display(x):
     quoted_query = urllib_quote(query)
 
     url = "https://www.youtube.com/results?search_query=" + quoted_query
+    # url = "https://github.com/Afsalms/Youtube-Streamer"
     print(url)
     print("**************************")
 
@@ -54,24 +55,32 @@ def display(x):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
 
-    request = urllib_request(url, headers=headers)
-    data_file = urllib_urlopen(request)
-    data_html = data_file.read()
-    data_file.close()
+    # request = urllib_request(url, headers=headers)
+    import requests
+    r = requests.get(url)
+    # data_file = urllib_urlopen(request)
+    # data_html = data_file.read()
+    # data_file.close()
+    page = r.text
 
     # print(data_html)
-    # print("--------------------------------------")
+    print("--------------------------------------")
 
-    soup = BeautifulSoup(data_html, 'html.parser')
+    soup = BeautifulSoup(page, 'html.parser')
 
     title = []
     ref = []
 
-    for h3 in soup.find_all("h3", attrs={"class":"yt-lockup-title"}):
-        print(h3)
+    for h3 in soup.find_all("a", attrs={'class':'yt-uix-tile-link'}):
+        print(h3.contents)
+        print(dir(h3))
+        print(h3.get("href"))
         print("-------------------")
-        title.append(h3.find('a').contents[0])
-        ref.append(h3.find('a')['href'])
+        # print(h3.find('a'))
+        # title.append(h3.find('a').contents[0])
+        title.append(h3.contents[0])
+        ref.append(h3.get("href"))
+        # ref.append(h3.find('a')['href'])
 
     sequence = ["S.No", "Title"]
 
@@ -91,7 +100,7 @@ def display(x):
             video_url = "https://www.youtube.com" + str(ref[int(choice) - 1])
             # video_title = str(title[int(choice) - 1]) + str(".mp3")
 
-            os.system("vlc " + video_url)
+            os.system("totem " + video_url)
 
         else:
             print("Invalid entry.")
