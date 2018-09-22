@@ -44,12 +44,14 @@ def get_input():
 
 def display(x):
     query = x.lower()
-    quoted_query = urllib_quote(query)
+    # quoted_query = urllib_quote(query)
 
-    url = "https://www.youtube.com/results?search_query=" + quoted_query
+    url = "https://www.youtube.com/results?search_query=" + "test"
     # url = "https://github.com/Afsalms/Youtube-Streamer"
     print(url)
     print("**************************")
+    # import eventlet
+    # eventlet.monkey_patch()
 
     # add header
     headers = {
@@ -64,6 +66,7 @@ def display(x):
     page = r.text
 
     # print(data_html)
+    print(page)
     print("--------------------------------------")
 
     soup = BeautifulSoup(page, 'html.parser')
@@ -92,9 +95,12 @@ def display(x):
     if len(title) != 0:
         print(color.BOLD + color.CYAN + "\nResults : " + color.END)
 
+        import sys
+        sys.setrecursionlimit(10000)
+
         print(t)
 
-        choice = raw_input(color.CYAN + color.BOLD + "\nEnter your choice (numerical) : " + color.END)
+        choice = input(color.CYAN + color.BOLD + "\nEnter your choice (numerical) : " + color.END)
 
         if int(choice) >=1 and int(choice) <= len(title):
             video_url = "https://www.youtube.com" + str(ref[int(choice) - 1])
