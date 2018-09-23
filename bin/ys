@@ -1,19 +1,11 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python
 
 from bs4 import BeautifulSoup
 from prettytable import PrettyTable
 import sys
 import os
-if sys.version_info[0] > 2:
-    from urllib.parse import quote as urllib_quote
-    from urllib.request import Request as urllib_request
-    from urllib.request import urlopen as urllib_urlopen
+import requests
 
-else:
-    import urllib2
-    from urllib2 import quote as urllib_quote
-    from urllib2 import Request as urllib_request
-    from urllib2 import urlopen as urllib_urlopen
 
 
 
@@ -34,56 +26,39 @@ def get_input():
     """Gets the input from user and formats it."""
     try:
         query = sys.argv[1:]
-        movie_name = ' '.join(query[0:])
-        return movie_name
+        video_player_name = sys.argv[1]
+        movie_name = ' '.join(query[1:])
+        return movie_name, video_player_name
+    except IndexError:
+        print ("Player name is missing")
+        exit()
     except Exception as e:
         print (e)
         exit()
     return query
 
 
-def display(x):
+def display(x, video_player_name):
     query = x.lower()
-    # quoted_query = urllib_quote(query)
 
-    url = "https://www.youtube.com/results?search_query=" + "test"
-    # url = "https://github.com/Afsalms/Youtube-Streamer"
-    print(url)
-    print("**************************")
-    # import eventlet
-    # eventlet.monkey_patch()
+    url = "https://www.youtube.com/results?search_query=" + query
 
     # add header
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
 
     # request = urllib_request(url, headers=headers)
-    import requests
-    r = requests.get(url)
-    # data_file = urllib_urlopen(request)
-    # data_html = data_file.read()
-    # data_file.close()
-    page = r.text
-
-    # print(data_html)
-    print(page)
-    print("--------------------------------------")
-
-    soup = BeautifulSoup(page, 'html.parser')
+    
+    request_page = requests.get(url)
+    request_data = request_page.text
+    soup = BeautifulSoup(request_data, 'html.parser')
 
     title = []
     ref = []
 
-    for h3 in soup.find_all("a", attrs={'class':'yt-uix-tile-link'}):
-        print(h3.contents)
-        print(dir(h3))
-        print(h3.get("href"))
-        print("-------------------")
-        # print(h3.find('a'))
-        # title.append(h3.find('a').contents[0])
-        title.append(h3.contents[0])
-        ref.append(h3.get("href"))
-        # ref.append(h3.find('a')['href'])
+    for a in soup.find_all("a", attrs={'class':'yt-uix-tile-link'}):
+        title.append(a.contents[0])
+        ref.append(a.get("href"))
 
     sequence = ["S.No", "Title"]
 
@@ -106,7 +81,7 @@ def display(x):
             video_url = "https://www.youtube.com" + str(ref[int(choice) - 1])
             # video_title = str(title[int(choice) - 1]) + str(".mp3")
 
-            os.system("totem " + video_url)
+            os.system(video_player_name +" " + video_url)
 
         else:
             print("Invalid entry.")
@@ -118,8 +93,8 @@ def display(x):
 
 
 def main():
-    x = get_input()
-    display(x)
+    movie_name, video_player_name = get_input()
+    display(movie_name, video_player_name)
 
 if __name__ == "__main__":
     main()

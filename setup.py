@@ -24,6 +24,7 @@ setup(
         'Programming Language :: Python :: 2'
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
     ],
     keywords="Youtube video streamer",
     author_email='dushyant.bgs@gmail.com',

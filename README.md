@@ -5,17 +5,17 @@ Searches for the youtube video and streams it instantly.
 
 # Installation
 ```
-$ pip2.7 install youtube-streamer
+$ pip install youtube-streamer
 ```
 
 # Usage
 Query for the video:
 ```
-$ ys [Video/Keyword]
+$ ys video_player_name [Video/Keyword]
 ```
 
 ```
-$ ys shape of you
+$ ys vlc shape of you
 ```
 
 # Screenshots
@@ -29,7 +29,7 @@ $ ys shape of you
 
 # Requirements
 
-Make sure you have [VLC media player](http://www.videolan.org) installed with the latest youtube.lua file. You can view the latest script [here](https://github.com/videolan/vlc/blob/master/share/lua/playlist/youtube.lua) and save it to **(vlc-install-dir)\lua\playlist\youtube.lua**.  
+Make sure you have any video player
 
 The script requires following dependencies and downloads them automatically.
 

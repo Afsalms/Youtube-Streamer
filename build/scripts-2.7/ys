@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 from bs4 import BeautifulSoup
-import urllib2
 from prettytable import PrettyTable
 import sys
 import os
+import requests
+
+
 
 
 class color:
@@ -24,39 +26,39 @@ def get_input():
     """Gets the input from user and formats it."""
     try:
         query = sys.argv[1:]
-        movie_name = ' '.join(query[0:])
-        return movie_name
+        video_player_name = sys.argv[1]
+        movie_name = ' '.join(query[1:])
+        return movie_name, video_player_name
+    except IndexError:
+        print ("Player name is missing")
+        exit()
     except Exception as e:
-        print(e)
+        print (e)
         exit()
     return query
 
 
-def display(x):
+def display(x, video_player_name):
     query = x.lower()
-    quoted_query = urllib2.quote(query)
 
-    url = "https://www.youtube.com/results?search_query=" + quoted_query
+    url = "https://www.youtube.com/results?search_query=" + query
 
     # add header
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'}
 
-    request = urllib2.Request(url, headers=headers)
-    data_file = urllib2.urlopen(request)
-    data_html = data_file.read()
-    data_file.close()
-
-    soup = BeautifulSoup(data_html, 'html.parser')
+    # request = urllib_request(url, headers=headers)
+    
+    request_page = requests.get(url)
+    request_data = request_page.text
+    soup = BeautifulSoup(request_data, 'html.parser')
 
     title = []
     ref = []
 
-    for h3 in soup.find_all("div", attrs={"class":"ytd-search"}):
-        print(h3)
-        print("111111111111111111111111111111111111")
-        title.append(h3.find('a').contents[0])
-        ref.append(h3.find('a')['href'])
+    for a in soup.find_all("a", attrs={'class':'yt-uix-tile-link'}):
+        title.append(a.contents[0])
+        ref.append(a.get("href"))
 
     sequence = ["S.No", "Title"]
 
@@ -68,25 +70,31 @@ def display(x):
     if len(title) != 0:
         print(color.BOLD + color.CYAN + "\nResults : " + color.END)
 
+        import sys
+        sys.setrecursionlimit(10000)
+
         print(t)
 
-        choice = raw_input(color.CYAN + color.BOLD + "\nEnter your choice (numerical) : " + color.END)
+        choice = input(color.CYAN + color.BOLD + "\nEnter your choice (numerical) : " + color.END)
 
         if int(choice) >=1 and int(choice) <= len(title):
             video_url = "https://www.youtube.com" + str(ref[int(choice) - 1])
-            os.system("vlc " + video_url)
+            # video_title = str(title[int(choice) - 1]) + str(".mp3")
+
+            os.system(video_player_name +" " + video_url)
+
         else:
             print("Invalid entry.")
             quit()
 
     else:
-        a = raw_input(color.BOLD + color.CYAN + "Sorry, no results found." + color.END)
+        print(color.BOLD + color.CYAN + "Sorry, no results found." + color.END)
         quit()
 
 
 def main():
-    x = get_input()
-    display(x)
+    movie_name, video_player_name = get_input()
+    display(movie_name, video_player_name)
 
 if __name__ == "__main__":
     main()
